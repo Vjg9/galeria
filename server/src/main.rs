@@ -1,10 +1,6 @@
-use actix_web::{get, web, App, HttpServer, Responder, middleware::Logger};
+use actix_web::{web, App, HttpServer, middleware::Logger};
 use dotenvy::dotenv;
-
-#[get("/")]
-async fn index() -> impl Responder {
-    "Hello World!"
-}
+use server::services::api;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -27,8 +23,8 @@ async fn main() -> std::io::Result<()> {
         let logger = Logger::default();
         App::new()
         .service(
-            web::scope("/api")
-                .service(index)
+           web::scope("/api")
+            .service(api::index)
         )
         .wrap(logger)
     })

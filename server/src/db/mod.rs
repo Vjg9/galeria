@@ -1,6 +1,11 @@
 use sqlx::postgres::{PgPoolOptions, PgRow};
 use sqlx::{FromRow, Row};
 
+// Model modules
+pub mod profile;
+pub mod album;
+pub mod image;
+
 // Ititialize the database
 pub async fn init() -> Result<sqlx::Pool<sqlx::Postgres>, sqlx::Error> {
    // Create connection

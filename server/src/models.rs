@@ -5,7 +5,6 @@ use serde::{Serialize, Deserialize};
 pub struct Profile {
     pub id: i32,
     pub name: String,
-    pub albums: Vec<i32>
 }
 
 // Album model
@@ -13,7 +12,7 @@ pub struct Profile {
 pub struct Album {
     pub id: i32,
     pub name: String,
-    pub images: Vec<i32>
+    pub profile: i32
 }
 
 // Image model

@@ -1,5 +1,4 @@
-use sqlx::postgres::{PgPoolOptions, PgRow};
-use sqlx::{FromRow, Row};
+use sqlx::postgres::PgPoolOptions;
 
 // Model modules
 pub mod profile;

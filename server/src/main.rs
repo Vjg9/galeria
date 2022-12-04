@@ -1,9 +1,13 @@
 use actix_web::{web, App, HttpServer, middleware::Logger};
 use dotenvy::dotenv;
 use server::services::api;
+use server::db;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    // Init database
+    db::init().await.unwrap();
+
     // Logging
     dotenv().ok();
     if std::env::var("MODE").unwrap() == "debug" {

@@ -2,12 +2,15 @@ use actix_web::{web, App, HttpServer, middleware::Logger};
 use dotenvy::dotenv;
 use server::services::api;
 use server::db;
+use sqlx::{Pool, Postgres};
+use std::sync::Mutex;
+
+struct State {
+    db: Mutex<Pool<Postgres>>,
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // Init database
-    db::init().await.unwrap();
-
     // Logging
     dotenv().ok();
     if std::env::var("MODE").unwrap() == "debug" {
@@ -22,10 +25,16 @@ async fn main() -> std::io::Result<()> {
     // Show server data
     println!("[\x1b[32mINFO\x1b[37m] Server running on port: \x1b[34m{port}\x1b[37m; [\x1b[34mhttp://localhost:{port}\x1b[37m]");
 
+    // Construct State 
+    let state = web::Data::new(State {
+        db: Mutex::new(db::init().await.unwrap())
+    });
+
     // Create HttpServer
     HttpServer::new(move || {
         let logger = Logger::default();
         App::new()
+        .app_data(state.clone())
         .service(
            web::scope("/api")
             .service(api::index)

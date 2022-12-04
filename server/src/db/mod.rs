@@ -2,7 +2,7 @@ use sqlx::postgres::{PgPoolOptions, PgRow};
 use sqlx::{FromRow, Row};
 
 // Ititialize the database
-pub async fn init() -> Result<(), sqlx::Error> {
+pub async fn init() -> Result<sqlx::Pool<sqlx::Postgres>, sqlx::Error> {
    // Create connection
    let pool = PgPoolOptions::new()
        .max_connections(5)
@@ -28,5 +28,5 @@ pub async fn init() -> Result<(), sqlx::Error> {
        .execute(&pool)
        .await?;
 
-    Ok(()) 
+    Ok(pool) 
 }

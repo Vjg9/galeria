@@ -1,6 +1,5 @@
 use actix_web::{get, put, delete, post, web, Responder, HttpResponse};
 use crate::db;
-use crate::models::Profile;
 use crate::state::State;
 use serde::{Serialize, Deserialize};
 
@@ -53,4 +52,17 @@ pub async fn update(data: web::Data<State>, path: web::Path<i32>, params: web::J
     db::profile::update(pool, id, name.to_string()).await;
 
     HttpResponse::Ok()
+}
+
+// List profile's albums
+#[get("{id}/album/list")]
+pub async fn list_albums(data: web::Data<State>, path: web::Path<i32>) -> impl Responder {
+    let pool = &*data.db.lock().unwrap();
+    let id = *path;
+
+    let albums = db::profile::list_albums(pool, id).await.unwrap(); 
+
+    let json = serde_json::to_string(&albums);
+
+    json
 }

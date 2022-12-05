@@ -1,4 +1,4 @@
-use actix_web::{get, post, web, Responder, HttpResponse};
+use actix_web::{get, delete, post, web, Responder, HttpResponse};
 use crate::db;
 use crate::models::Profile;
 use crate::state::State;
@@ -17,7 +17,7 @@ pub async fn list(data: web::Data<State>) -> impl Responder {
 
 // Todo params struct
 #[derive(Serialize, Deserialize, Debug)]
-struct TodoParams {
+pub struct TodoParams {
     name: String,
 }
 
@@ -28,6 +28,17 @@ pub async fn add(data: web::Data<State>, params: web::Json<TodoParams>) -> impl 
     let name = &params.name;
 
     db::profile::add(pool, name.to_string()).await;
+
+    HttpResponse::Ok() 
+}
+
+// Delete profile
+#[delete("/delete/{id}")]
+pub async fn delete(data: web::Data<State>, path: web::Path<i32>) -> impl Responder {
+    let pool = &*data.db.lock().unwrap();
+    let id = *path;
+
+    db::profile::delete(pool, id).await;
 
     HttpResponse::Ok() 
 }

@@ -1,13 +1,9 @@
 use actix_web::{web, App, HttpServer, middleware::Logger};
 use dotenvy::dotenv;
-use server::services::api;
+use server::services;
 use server::db;
-use sqlx::{Pool, Postgres};
 use std::sync::Mutex;
-
-struct State {
-    db: Mutex<Pool<Postgres>>,
-}
+use server::state::State;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -37,7 +33,11 @@ async fn main() -> std::io::Result<()> {
         .app_data(state.clone())
         .service(
            web::scope("/api")
-            .service(api::index)
+            .service(
+                web::scope("/profile")
+                    .service(services::api::profile::list)
+                    .service(services::api::profile::add)
+            )
         )
         .wrap(logger)
     })

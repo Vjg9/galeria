@@ -1,14 +1,14 @@
 use serde::{Serialize, Deserialize};
 
 // Profile model
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(sqlx::FromRow, Serialize, Deserialize, Debug)]
 pub struct Profile {
     pub id: i32,
     pub name: String,
 }
 
 // Album model
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(sqlx::FromRow, Serialize, Deserialize, Debug)]
 pub struct Album {
     pub id: i32,
     pub name: String,
@@ -16,7 +16,7 @@ pub struct Album {
 }
 
 // Image model
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(sqlx::FromRow, Serialize, Deserialize, Debug)]
 pub struct Image {
     pub id: i32,
     pub name: String,

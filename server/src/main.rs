@@ -39,6 +39,7 @@ async fn main() -> std::io::Result<()> {
                     .service(services::api::profile::add)
                     .service(services::api::profile::delete)
                     .service(services::api::profile::update)
+                    .service(services::api::profile::list_albums)
             )
         )
         .wrap(logger)

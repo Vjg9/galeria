@@ -31,3 +31,14 @@ pub async fn add(pool: &Pool<Postgres>, name: String) {
         .await
         .unwrap();
 }
+
+// Delete profile 
+pub async fn delete(pool: &Pool<Postgres>, id: i32) {
+    sqlx::query(
+        "DELETE FROM profile WHERE id=$1"
+    )
+        .bind(id)
+        .execute(pool)
+        .await
+        .unwrap();
+}

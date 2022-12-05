@@ -1,4 +1,4 @@
-use actix_web::{get, delete, post, web, Responder, HttpResponse};
+use actix_web::{get, put, delete, post, web, Responder, HttpResponse};
 use crate::db;
 use crate::models::Profile;
 use crate::state::State;
@@ -41,4 +41,16 @@ pub async fn delete(data: web::Data<State>, path: web::Path<i32>) -> impl Respon
     db::profile::delete(pool, id).await;
 
     HttpResponse::Ok() 
+}
+
+// Update profile 
+#[put("/update/{id}")]
+pub async fn update(data: web::Data<State>, path: web::Path<i32>, params: web::Json<TodoParams>) -> impl Responder {
+    let pool = &*data.db.lock().unwrap();
+    let id = *path;
+    let name = &params.name;
+
+    db::profile::update(pool, id, name.to_string()).await;
+
+    HttpResponse::Ok()
 }

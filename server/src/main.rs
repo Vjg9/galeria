@@ -37,6 +37,7 @@ async fn main() -> std::io::Result<()> {
                 web::scope("/profile")
                     .service(services::api::profile::list)
                     .service(services::api::profile::add)
+                    .service(services::api::profile::delete)
             )
         )
         .wrap(logger)

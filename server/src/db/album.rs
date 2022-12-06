@@ -26,3 +26,16 @@ pub async fn delete(pool: &Pool<Postgres>, id: i32) {
         .await
         .unwrap();
 }
+
+// Update album
+pub async fn update(pool: &Pool<Postgres>, id: i32, name: String, profile: i32) {
+    sqlx::query(
+        "UPDATE album SET name = $2, profile = $3 WHERE id = $1"
+    )
+        .bind(id)
+        .bind(name)
+        .bind(profile)
+        .execute(pool)
+        .await
+        .unwrap();
+}

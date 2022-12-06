@@ -1,4 +1,4 @@
-use actix_web::{delete, post, web, Responder, HttpResponse};
+use actix_web::{put, delete, post, web, Responder, HttpResponse};
 use crate::db;
 use crate::state::State;
 use serde::{Serialize, Deserialize};
@@ -31,4 +31,17 @@ pub async fn delete(data: web::Data<State>, path: web::Path<i32>) -> impl Respon
     db::album::delete(pool, id).await;
 
     HttpResponse::Ok() 
+}
+
+// Update album 
+#[put("/update/{id}")]
+pub async fn update(data: web::Data<State>, path: web::Path<i32>, params: web::Json<AlbumParams>) -> impl Responder {
+    let pool = &*data.db.lock().unwrap();
+    let id = *path;
+    let name = &params.name;
+    let profile = params.profile;
+
+    db::album::update(pool, id, name.to_string(), profile).await;
+
+    HttpResponse::Ok()
 }

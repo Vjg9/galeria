@@ -19,19 +19,19 @@ pub async fn init() -> Result<sqlx::Pool<sqlx::Postgres>, sqlx::Error> {
 
    // Create tabels if they don't exist
    sqlx::query(
-        r#"CREATE TABLE IF NOT EXISTS profile ( id SERIAL PRIMARY KEY, name TEXT);"#
+        r#"CREATE TABLE IF NOT EXISTS profile ( id SERIAL PRIMARY KEY, name TEXT UNIQUE);"#
     )
        .execute(&pool)
        .await?;
 
     sqlx::query(
-        r#"CREATE TABLE IF NOT EXISTS album ( id SERIAL PRIMARY KEY, name TEXT, profile INTEGER NOT NULL, FOREIGN KEY(profile) REFERENCES profile(id) ON DELETE CASCADE);"#
+        r#"CREATE TABLE IF NOT EXISTS album ( id SERIAL PRIMARY KEY, name TEXT UNIQUE, profile INTEGER NOT NULL, FOREIGN KEY(profile) REFERENCES profile(id) ON DELETE CASCADE);"#
     )
        .execute(&pool)
        .await?;
 
     sqlx::query(
-        r#"CREATE TABLE IF NOT EXISTS image ( id SERIAL PRIMARY KEY, name TEXT, album INTEGER NOT NULL, FOREIGN KEY(album) REFERENCES album(id) ON DELETE CASCADE);"#
+        r#"CREATE TABLE IF NOT EXISTS image ( id SERIAL PRIMARY KEY, name TEXT UNIQUE, album INTEGER NOT NULL, FOREIGN KEY(album) REFERENCES album(id) ON DELETE CASCADE);"#
     )
        .execute(&pool)
        .await?;

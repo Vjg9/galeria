@@ -15,3 +15,14 @@ pub async fn add(pool: &Pool<Postgres>, name: String, profile: i32) {
         .await
         .unwrap();
 }
+
+// Delete album 
+pub async fn delete(pool: &Pool<Postgres>, id: i32) {
+    sqlx::query(
+        "DELETE FROM album WHERE id=$1"
+    )
+        .bind(id)
+        .execute(pool)
+        .await
+        .unwrap();
+}

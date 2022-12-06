@@ -43,6 +43,7 @@ async fn main() -> std::io::Result<()> {
             )
             .service(
                 web::scope("/album")
+                    .service(services::api::album::add)
             )
         )
         .wrap(logger)

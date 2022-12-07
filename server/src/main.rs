@@ -48,6 +48,9 @@ async fn main() -> std::io::Result<()> {
                     .service(services::api::album::update)
                     .service(services::api::album::list_images)
             )
+            .service(
+                web::scope("/image")
+            )
         )
         .wrap(logger)
     })

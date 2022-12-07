@@ -2,7 +2,7 @@ use sqlx::{
     Postgres,
     Pool
 };
-use crate::models::Album;
+use crate::models::{Album, Image};
 
 // Get album by name 
 pub async fn get_name(pool: &Pool<Postgres>, name: String) -> Result<Option<Album>, sqlx::Error> {
@@ -50,4 +50,23 @@ pub async fn update(pool: &Pool<Postgres>, id: i32, name: String, profile: i32) 
         .execute(pool)
         .await
         .unwrap();
+}
+
+// List album's images
+pub async fn list_images(pool: &Pool<Postgres>, id: i32) -> Result<Vec<Image>, sqlx::Error>{
+    let rows: Vec<(i32, String, i32)> = sqlx::query_as(r#"SELECT * FROM image WHERE album=$1"#)
+        .bind(id)
+        .fetch_all(pool)
+        .await?;
+
+    let images: Vec<Image> = rows.iter().map(|row| {
+        Image {
+            id: row.0,
+            name: row.1.as_str().to_string(),
+            album: row.2
+        }
+    })
+    .collect();
+
+    Ok(images)
 }

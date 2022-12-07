@@ -6,11 +6,6 @@ use crate::models::Album;
 
 // Get album by name 
 pub async fn get_name(pool: &Pool<Postgres>, name: String) -> Result<Option<Album>, sqlx::Error> {
-    //let row: (i32, String, i32) = sqlx::query_as(r#"SELECT * FROM album WHERE name=$1"#)
-        //.bind(&name)
-        //.fetch_one(pool)
-        //.await?;
-
     match sqlx::query_as::<_, Album>(r#"SELECT * FROM album WHERE name=$1"#)
         .bind(&name)
         .fetch_one(pool)
@@ -19,14 +14,6 @@ pub async fn get_name(pool: &Pool<Postgres>, name: String) -> Result<Option<Albu
        Ok(album) => return Ok(Some(album)) ,
        Err(_) => return Ok(None)
     }
-
-    //let album: Album = Album {
-            //id: row.0,
-            //name: row.1.as_str().to_string(),
-            //profile: row.2,
-    //};
-   
-    //Ok(album)
 }
 
 // Add profile

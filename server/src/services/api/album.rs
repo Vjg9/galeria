@@ -17,9 +17,15 @@ pub async fn add(data: web::Data<State>, params: web::Json<AlbumParams>) -> impl
     let name = &params.name;
     let profile = params.profile;
 
-    db::album::add(pool, name.to_string(), profile).await;
-
-    HttpResponse::Ok() 
+    match db::album::get_name(pool, name.to_string()).await.unwrap() {
+        Some(_) => {
+            return HttpResponse::BadRequest()
+        }
+        None => {
+            db::album::add(pool, name.to_string(), profile).await;
+            return HttpResponse::Ok()
+        }
+    };
 }
 
 // Delete album

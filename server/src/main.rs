@@ -52,6 +52,7 @@ async fn main() -> std::io::Result<()> {
                 web::scope("/image")
                     .service(services::api::image::add)
                     .service(services::api::image::delete)
+                    .service(services::api::image::update)
             )
         )
         .wrap(logger)

@@ -1,4 +1,4 @@
-use actix_web::{post, web, Responder, HttpResponse};
+use actix_web::{delete, post, web, Responder, HttpResponse};
 use crate::db;
 use crate::state::State;
 use serde::{Serialize, Deserialize};
@@ -26,4 +26,15 @@ pub async fn add(data: web::Data<State>, params: web::Json<ImageParams>) -> impl
             return HttpResponse::Ok()
         }
     };
+}
+
+// Delete image
+#[delete("/delete/{id}")]
+pub async fn delete(data: web::Data<State>, path: web::Path<i32>) -> impl Responder {
+    let pool = &*data.db.lock().unwrap();
+    let id = *path;
+
+    db::image::delete(pool, id).await;
+
+    HttpResponse::Ok() 
 }

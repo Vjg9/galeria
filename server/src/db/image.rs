@@ -27,3 +27,14 @@ pub async fn add(pool: &Pool<Postgres>, name: String, album: i32) {
         .await
         .unwrap();
 }
+
+// Delete image
+pub async fn delete(pool: &Pool<Postgres>, id: i32) {
+    sqlx::query(
+        "DELETE FROM image WHERE id=$1"
+    )
+        .bind(id)
+        .execute(pool)
+        .await
+        .unwrap();
+}

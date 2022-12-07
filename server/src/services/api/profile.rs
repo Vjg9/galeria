@@ -26,9 +26,15 @@ pub async fn add(data: web::Data<State>, params: web::Json<TodoParams>) -> impl 
     let pool = &*data.db.lock().unwrap();
     let name = &params.name;
 
-    db::profile::add(pool, name.to_string()).await;
-
-    HttpResponse::Ok() 
+    match db::profile::get_name(pool, name.to_string()).await.unwrap() {
+        Some(_) => {
+            return HttpResponse::BadRequest();
+        }
+        None => {
+            db::profile::add(pool, name.to_string()).await;
+            return HttpResponse::Ok();
+        }
+    }
 }
 
 // Delete profile

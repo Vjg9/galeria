@@ -23,6 +23,12 @@ pub async fn add(data: web::Data<State>, params: web::Json<AlbumParams>) -> impl
         }
         None => {
             db::album::add(pool, name.to_string(), profile).await;
+            let profile = db::profile::get_id(pool, profile).await.unwrap();
+            let profile_name = match profile {
+                Some(profile) => profile.name,
+                None => "Test".to_string()
+            };
+            web::block(move || std::fs::create_dir(format!("./static/{}/{}", profile_name, &params.name))).await.unwrap().unwrap();
             return HttpResponse::Ok()
         }
     };

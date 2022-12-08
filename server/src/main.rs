@@ -1,4 +1,5 @@
 use actix_web::{web, App, HttpServer, middleware::Logger};
+use actix_files;
 use dotenvy::dotenv;
 use server::services;
 use server::db;
@@ -53,6 +54,9 @@ async fn main() -> std::io::Result<()> {
                     .service(services::api::image::add)
                     .service(services::api::image::delete)
                     .service(services::api::image::update)
+            )
+            .service(
+                actix_files::Files::new("/static", "./static").show_files_listing()
             )
         )
         .wrap(logger)

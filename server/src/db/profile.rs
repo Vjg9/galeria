@@ -4,6 +4,18 @@ use sqlx::{
 };
 use crate::models::{Profile, Album};
 
+// Get profile by id
+pub async fn get_id(pool: &Pool<Postgres>, id: i32) -> Result<Option<Profile>, sqlx::Error> {
+    match sqlx::query_as::<_, Profile>(r#"SELECT * FROM profile WHERE id=$1"#)
+        .bind(&id)
+        .fetch_one(pool)
+        .await
+    {
+       Ok(profile) => return Ok(Some(profile)) ,
+       Err(_) => return Ok(None)
+    }
+}
+
 // Get profile by name 
 pub async fn get_name(pool: &Pool<Postgres>, name: String) -> Result<Option<Profile>, sqlx::Error> {
     match sqlx::query_as::<_, Profile>(r#"SELECT * FROM profile WHERE name=$1"#)

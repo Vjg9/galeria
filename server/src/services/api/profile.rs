@@ -32,6 +32,7 @@ pub async fn add(data: web::Data<State>, params: web::Json<TodoParams>) -> impl 
         }
         None => {
             db::profile::add(pool, name.to_string()).await;
+            web::block(move || std::fs::create_dir(format!("./static/{}", &params.name))).await.unwrap().unwrap();
             return HttpResponse::Ok();
         }
     }

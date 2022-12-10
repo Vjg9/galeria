@@ -71,6 +71,41 @@ pub async fn update(data: web::Data<State>, path: web::Path<i32>, params: web::J
     let name = &params.name;
     let album = params.album;
 
+    let image = match db::image::get_id(pool, id).await.unwrap() {
+        Some(i) => i,
+        None => return HttpResponse::BadRequest()
+    };
+    
+    let old_album = match db::album::get_id(pool, image.album).await.unwrap() {
+        Some(a) => a,
+        None => return HttpResponse::BadRequest()
+    };
+
+    let old_profile = match db::profile::get_id(pool, old_album.profile).await.unwrap() {
+        Some(p) => p,
+        None => return HttpResponse::BadRequest()
+    };
+
+    let new_album = match db::album::get_id(pool, album).await.unwrap() {
+        Some(a) => a,
+        None => return HttpResponse::BadRequest()
+    };
+
+    let new_profile = match db::profile::get_id(pool, new_album.profile).await.unwrap() {
+        Some(p) => p,
+        None => return HttpResponse::BadRequest()
+    };
+
+    let old_file_path = format!("static/{}/{}/{}.png", old_profile.name, old_album.name, image.name);
+    let file_path = format!("static/{}/{}/{}.png", new_profile.name, new_album.name, &name);
+
+    if std::path::Path::new(&old_file_path).exists() {
+        web::block(move || {
+                std::fs::rename(&old_file_path, file_path).unwrap();
+            }
+        ).await.unwrap();
+    }
+
     db::image::update(pool, id, name.to_string(), album).await;
 
     HttpResponse::Ok()

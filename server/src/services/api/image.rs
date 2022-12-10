@@ -123,3 +123,35 @@ pub async fn add_file(mut payload: Multipart, data: web::Data<State>) -> Result<
 
     Ok(HttpResponse::Ok().into())
 }
+
+// Delete file 
+#[delete("file/delete/{id}")]
+pub async fn delete_file(data: web::Data<State>, path: web::Path<i32>) -> impl Responder {
+    let pool = &*data.db.lock().unwrap();
+    let id = *path;
+
+    let image = match db::image::get_id(pool, id).await.unwrap() {
+        Some(i) => i,
+        None => return HttpResponse::BadRequest()
+    };
+    
+    let album = match db::album::get_id(pool, image.album).await.unwrap() {
+        Some(a) => a,
+        None => return HttpResponse::BadRequest()
+    };
+
+    let profile = match db::profile::get_id(pool, album.profile).await.unwrap() {
+        Some(p) => p,
+        None => return HttpResponse::BadRequest()
+    };
+
+    let file_path = format!("static/{}/{}/{}.png", profile.name, album.name, image.name);
+
+    if std::path::Path::new(&file_path).exists() {
+        web::block(|| std::fs::remove_file(file_path)).await.unwrap().unwrap();
+    } else {
+        return HttpResponse::BadRequest()
+    }
+
+    HttpResponse::Ok() 
+}

@@ -40,6 +40,22 @@ pub async fn delete(data: web::Data<State>, path: web::Path<i32>) -> impl Respon
     let pool = &*data.db.lock().unwrap();
     let id = *path;
 
+    let album = match db::album::get_id(pool, id).await.unwrap() {
+        Some(a) => a,
+        None => return HttpResponse::BadRequest()
+    };
+
+    let profile = match db::profile::get_id(pool, album.profile).await.unwrap() {
+        Some(p) => p,
+        None => return HttpResponse::BadRequest()
+    };
+
+    let file_path = format!("static/{}/{}", profile.name, album.name);
+
+    if std::path::Path::new(&file_path).exists() {
+        web::block(|| std::fs::remove_dir_all(file_path)).await.unwrap().unwrap();
+    }
+
     db::album::delete(pool, id).await;
 
     HttpResponse::Ok() 

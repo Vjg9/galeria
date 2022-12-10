@@ -4,6 +4,18 @@ use sqlx::{
 };
 use crate::models::{Album, Image};
 
+// Get album by id
+pub async fn get_id(pool: &Pool<Postgres>, id: i32) -> Result<Option<Album>, sqlx::Error> {
+    match sqlx::query_as::<_, Album>(r#"SELECT * FROM album WHERE id=$1"#)
+        .bind(&id)
+        .fetch_one(pool)
+        .await
+    {
+       Ok(album) => return Ok(Some(album)) ,
+       Err(_) => return Ok(None)
+    }
+}
+
 // Get album by name 
 pub async fn get_name(pool: &Pool<Postgres>, name: String) -> Result<Option<Album>, sqlx::Error> {
     match sqlx::query_as::<_, Album>(r#"SELECT * FROM album WHERE name=$1"#)

@@ -67,6 +67,21 @@ pub async fn update(data: web::Data<State>, path: web::Path<i32>, params: web::J
     let id = *path;
     let name = &params.name;
 
+    let old_profile = match db::profile::get_id(pool, id).await.unwrap() {
+        Some(p) => p,
+        None => return HttpResponse::BadRequest()
+    };
+
+    let old_file_path = format!("static/{}", old_profile.name);
+    let file_path = format!("static/{}", name);
+
+    if std::path::Path::new(&old_file_path).exists() {
+        web::block(move || {
+                std::fs::rename(&old_file_path, &file_path).unwrap();
+            }
+        ).await.unwrap();
+    }
+
     db::profile::update(pool, id, name.to_string()).await;
 
     HttpResponse::Ok()

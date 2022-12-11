@@ -60,6 +60,7 @@ async fn main() -> std::io::Result<()> {
                              .route(web::post().to(services::api::image::add_file))
                     )
                     .service(services::api::image::delete_file)
+                    .service(services::api::image::get_by_name)
             )
             .service(
                 actix_files::Files::new("/static", "./static").show_files_listing()

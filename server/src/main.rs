@@ -41,6 +41,7 @@ async fn main() -> std::io::Result<()> {
                     .service(services::api::profile::delete)
                     .service(services::api::profile::update)
                     .service(services::api::profile::list_albums)
+                    .service(services::api::profile::get_by_name)
             )
             .service(
                 web::scope("/album")

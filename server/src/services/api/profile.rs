@@ -3,6 +3,22 @@ use crate::db;
 use crate::state::State;
 use serde::{Serialize, Deserialize};
 
+// get profile by name 
+#[get("/get/name/{name}")]
+pub async fn get_by_name(data: web::Data<State>, path: web::Path<String>) -> impl Responder {
+    let pool = &*data.db.lock().unwrap();
+    let name = &*path;
+
+    match db::profile::get_name(pool, name.to_string()).await.unwrap() {
+        Some(p) => {
+            let json = serde_json::to_string(&p).unwrap();
+
+            return HttpResponse::Ok().json(json)
+        },
+        None => return HttpResponse::BadRequest().json("")
+    };
+}
+
 // List profiles
 #[get("/list")]
 pub async fn list(data: web::Data<State>) -> impl Responder {

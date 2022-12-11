@@ -3,6 +3,22 @@ use crate::db;
 use crate::state::State;
 use serde::{Serialize, Deserialize};
 
+// get album by name 
+#[get("/get/name/{name}")]
+pub async fn get_by_name(data: web::Data<State>, path: web::Path<String>) -> impl Responder {
+    let pool = &*data.db.lock().unwrap();
+    let name = &*path;
+
+    match db::album::get_name(pool, name.to_string()).await.unwrap() {
+        Some(a) => {
+            let json = serde_json::to_string(&a).unwrap();
+
+            return HttpResponse::Ok().json(json)
+        },
+        None => return HttpResponse::BadRequest().json("")
+    };
+}
+
 // Album params struct
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AlbumParams {

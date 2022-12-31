@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  server: 
+    image: galeria
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db/static
+      - MODE=production 
+      - PORT=8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/static:/app/static
+
+  db: 
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -h $$(hostname -i)"]
+      interval: 10s 
+      timeout: 5s 
+      retries: 5
+    environment:
+      - POSTGRES_USER=postgres 
+      - POSTGRES_PASSWORD=postgres 
+      - POSTGRES_DB=static

@@ -80,7 +80,3 @@ git clone https://github.com/Vjg9/galeria
 cd galeria
 docker compose up -d 
 ```
-
-## License
-
-- The __License__ is located in the __LICENSE.md__ file.
